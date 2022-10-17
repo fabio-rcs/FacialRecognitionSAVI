@@ -2,7 +2,7 @@
 
 import cv2
 from cv2 import imwrite
-import face_recognition
+
 
 def main():
 
