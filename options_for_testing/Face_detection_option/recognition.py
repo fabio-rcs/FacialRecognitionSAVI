@@ -14,13 +14,6 @@ class Recognition:
         # Find all the faces and face encodings in the current frame of video
         face_locations = face_recognition.face_locations(rgb_small_frame)
         face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
-        #face_locations_temp = []
-        #for (top, right, bottom, left) in face_locations:
-        #    top *= 4
-        #    right *= 4
-        #    bottom *= 4
-        #    left *= 4
-        #    face_locations_temp.append((top, right, bottom, left))
         # Start new variable to store the names in the frame
         face_names = []
         for face_encoding in face_encodings:
@@ -41,7 +34,7 @@ class Recognition:
 
             face_names.append(name)
 #        face_locations = face_locations_temp
-        return face_locations, face_names
+        return face_locations, face_names, face_encodings
 
     def draw_rectangles(self, frame, face_inframe, color):
         (top, right, bottom, left), name = face_inframe
@@ -57,9 +50,9 @@ class Recognition:
         # Draw a label with a name below the face
         font = cv2.FONT_HERSHEY_DUPLEX
         textsize = cv2.getTextSize(name, font, 1.0, 1)
-        cv2.putText(frame, name, (int((left + right)/2) - int(textsize[0][0] / 2) , bottom + int(textsize[0][1] / 2) + 4 + textsize[1]), font, 1.0, (0, 0, 255), 1)
+        cv2.putText(frame, name, (int((left + right)/2) - int(textsize[0][0] / 2) , bottom + int(textsize[0][1] / 2) + 4 + textsize[1]), font, 1.0, color, 1)
 
-    def encode_frame(self, frame, face_location):
+    def save_face(self, face_names, face_encodings):
         image_encoded = face_recognition.face_encodings(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))[0]
         return image_encoded
         

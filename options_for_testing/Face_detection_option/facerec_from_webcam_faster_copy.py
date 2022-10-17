@@ -4,16 +4,8 @@ import cv2
 import numpy as np
 from recognition import Recognition
 
-# This is a demo of running face recognition on live video from your webcam. It's a little more complicated than the
-# other example, but it includes some basic performance tweaks to make things run a lot faster:
-#   1. Process each video frame at 1/4 resolution (though still display it at full resolution)
-#   2. Only detect faces in every other frame of video.
 
-# PLEASE NOTE: This example requires OpenCV (the `cv2` library) to be installed only to read from your webcam.
-# OpenCV is *not* required to use the face_recognition library. It's only required if you want to run this
-# specific demo. If you have trouble installing it, try any of the other demos that don't require it instead.
-
-# Get a reference to webcam #0 (the default one)
+# Get a reference to webcam #0 (the default one)V
 video_capture = cv2.VideoCapture(0)
 
 # Load a sample picture and learn how to recognize it.
@@ -30,7 +22,7 @@ known_face_encodings = [
     biden_face_encoding
 ]
 known_face_names = [
-    "Joao Rosario",
+    "Goncalo Ribeiro",
     "Goncalo Ribeiro"
 ]
 
@@ -40,20 +32,26 @@ face_encodings = []
 face_names = []
 process_this_frame = True
 recognition = Recognition()
-
+cycle_interval = 2
+cycle = 0
 while True:
+    cycle += 1
     # Grab a single frame of video
     ret, frame = video_capture.read()
 
     # Only process every other frame of video to save time
-    if process_this_frame:
-        teste, teste2 = recognition.process_frame(frame,known_face_encodings, known_face_names)
-    process_this_frame = not process_this_frame
-    print('cycle')
 
+    if process_this_frame or cycle>=cycle_interval:
+        process_this_frame = False
+        cycle = 0
+        face_locations, face_names, face_encodings = recognition.process_frame(frame,known_face_encodings, known_face_names)
     # Display the results
-    for (top, right, bottom, left), name in zip(teste,teste2):
-       recognition.draw_rectangles(frame, ((top, right, bottom, left), name), (0,0,255))
+    for (top, right, bottom, left), name, face_encoding in zip(face_locations,face_names, face_encodings):
+        if name == 'Unknown':
+            recognition.draw_rectangles(frame, ((top, right, bottom, left), name), (0,0,255))
+
+        else:
+            recognition.draw_rectangles(frame, ((top, right, bottom, left), name), (0,255,0))
     # Display the resulting image
     cv2.imshow('Video', frame)
 
