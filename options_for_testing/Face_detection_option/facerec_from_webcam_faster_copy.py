@@ -3,28 +3,16 @@ import face_recognition
 import cv2
 import numpy as np
 from recognition import Recognition
+import pickle
 
-
+dir_db = './Database/database_group.pickle'
 # Get a reference to webcam #0 (the default one)V
 video_capture = cv2.VideoCapture(0)
 
 # Load a sample picture and learn how to recognize it.
-obama_image = face_recognition.load_image_file("imagem-teste2.png")
-obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
-
-# Load a second sample picture and learn how to recognize it.
-biden_image = face_recognition.load_image_file("imagem-teste.png")
-biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
-
+with open(dir_db, 'rb') as f:
+     known_face_names, known_face_encodings = pickle.load(f)
 # Create arrays of known face encodings and their names
-known_face_encodings = [
-    obama_face_encoding,
-    biden_face_encoding
-]
-known_face_names = [
-    "Goncalo Ribeiro",
-    "Goncalo Ribeiro"
-]
 
 # Initialize some variables
 face_locations = []
