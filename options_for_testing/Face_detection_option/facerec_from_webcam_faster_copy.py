@@ -20,7 +20,7 @@ face_encodings = []
 face_names = []
 process_this_frame = True
 recognition = Recognition()
-cycle_interval = 2
+cycle_interval =2 
 cycle = 0
 while True:
     cycle += 1

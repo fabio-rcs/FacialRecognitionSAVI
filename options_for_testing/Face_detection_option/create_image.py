@@ -37,7 +37,7 @@ def main():
         cv2.imshow('video', img_RGB)
 
         if cv2.waitKey(1) == ord('q'):
-            cv2.imwrite('imagem-teste2.png', img_RGB)
+            cv2.imwrite('Tatiana.png', img_RGB)
             break
     # ---------------------------------------------------------------------------------
     # Termination
