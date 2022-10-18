@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import tkinter as tk                # python 3
 from tkinter import font as tkfont
+from matplotlib import pyplot as plt
 
 BaseD_ON = False
 BadeD_OFF = False 
@@ -13,7 +14,7 @@ def make_something(value):
 		print('On ' + str(BaseD_ON) + ' OFF ' + str(BaseD_OFF))
 	else: 
 		BaseD_ON = False
-		BaseD_OFF = True
+		BaseD_OFF = True 
 		root.destroy()
 		print('On ' + str(BaseD_ON) + ' OFF ' + str(BaseD_OFF))
 	
@@ -29,4 +30,10 @@ tk.Button(frm, text="BaseD OFF", command = lambda *args: make_something(False)).
 
 root.mainloop()  
 
+if BaseD_ON == True:
+	print('ok')
 
+
+
+# Notes:
+# https://python.tutorialink.com/change-the-value-of-a-variable-with-a-button-tkinter/
