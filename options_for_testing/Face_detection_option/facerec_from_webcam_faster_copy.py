@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-import face_recognition
 import cv2
-import numpy as np
 from recognition import Recognition
 import pickle
 
@@ -35,7 +33,7 @@ while True:
             face_locations, face_names, face_encodings = recognition.process_frame()
         except ValueError:
             pass
-    # Display the results
+    # Display the results and get unknown people ids
     count = 0
     unknown_idx = []
     for (top, right, bottom, left), name in zip(face_locations,face_names):
@@ -46,9 +44,15 @@ while True:
             recognition.draw_rectangles(((top, right, bottom, left), name), (0,255,0))
         count += 1
     
-    # print('Identify people')
-    # for (top, right, bottom, left), name in zip(face_locations,face_names):
-    #     recognition.draw_rectangles(((top, right, bottom, left), name), (0,0,255))
+    print('Identify people')
+    for i in unknown_idx:
+
+       
+
+
+    # (top, right, bottom, left), face_encoding in zip(face_locations,face_encodings):
+        recognition.remove_name(frame, recognition.frame, face_locations[i], 'Unknown')
+        # recognition.draw_rectangles((face_locations[i], 'teste'), (255,0,0))
 
     # Display the resulting image
     cv2.imshow('Video', recognition.frame)

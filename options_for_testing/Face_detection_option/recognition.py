@@ -54,8 +54,22 @@ class Recognition:
         # Draw the name below the face
         font = cv2.FONT_HERSHEY_DUPLEX
         textsize = cv2.getTextSize(name, font, 1.0, 1)
-        cv2.putText(self.frame, name, (int((left + right)/2) - int(textsize[0][0] / 2) , bottom + int(textsize[0][1] / 2) + 4 + textsize[1]), font, 1.0, color, 1)
+        cv2.putText(self.frame, name, (int((left + right)/2) - int(textsize[0][0] / 2) , bottom + int(textsize[0][1] / 2) + textsize[0][1]), font, 1.0, color, 1)
 
+    def remove_name(self,original_frame, final_frame, face_location, name):
+        (top, right, bottom, left) = face_location
+        top *= frame_reduction
+        right *= frame_reduction
+        bottom *= frame_reduction
+        left *= frame_reduction
+        font = cv2.FONT_HERSHEY_DUPLEX
+        textsize = cv2.getTextSize(name, font, 1.0, 1)
+        mask = original_frame[(bottom - int(textsize[0][1] / 2) + textsize[0][1]) : (bottom + int(textsize[0][1] / 2) + textsize[0][1]),(int((left + right)/2) - int(textsize[0][0] / 2)):(int((left + right)/2) + int(textsize[0][0] / 2))]
+        final_frame[(bottom - int(textsize[0][1] / 2) + textsize[0][1]) : (bottom + int(textsize[0][1] / 2) + textsize[0][1]),(int((left + right)/2) - int(textsize[0][0] / 2)):(int((left + right)/2) + int(textsize[0][0] / 2))] = mask
+        #cv2.imshow('unknown', mask)
+
+
+        # cv2.putText(self.frame, name, (int((left + right)/2) - int(textsize[0][0] / 2) , bottom + int(textsize[0][1] / 2) + 4 + textsize[1]), font, 1.0, color, 1)
     # def save_face(self, face_names, face_encodings):
     #     image_encoded = face_recognition.face_encodings(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))[0]
     #     return image_encoded
