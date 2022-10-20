@@ -1,59 +1,120 @@
-#!/usr/bin/env python3
-
-from copy import deepcopy
 import cv2
+import imutils
+import numpy as np
+import argparse
 
-def main():
+def detect(frame):
+    bounding_box_cordinates, weights =  HOGCV.detectMultiScale(frame, winStride = (4, 4), padding = (8, 8), scale = 0.5)
+    
+    person = 1
+    for x,y,w,h in bounding_box_cordinates:
+        cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0), 2)
+        cv2.putText(frame, f'person {person}', (x,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 1)
+        person += 1
+    
+    cv2.putText(frame, 'Status : Detecting ', (40,40), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255,0,0), 2)
+    cv2.putText(frame, f'Total Persons : {person-1}', (40,70), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255,0,0), 2)
+    cv2.imshow('output', frame)
 
-    # ---------------------------------------------------------------------------------
-    # Initialization
-    # ---------------------------------------------------------------------------------
+    return frame
 
-    # Object Detection in Real-time
-    # multiple cascades: https://github.com/Itseez/opencv/tree/master/data/haarcascades
-    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+def detectByPathVideo(path, writer):
 
-    #Capture Video from Camera
-    cap = cv2.VideoCapture(0)  
+    video = cv2.VideoCapture(path)
+    check, frame = video.read()
+    if check == False:
+        print('Video Not Found. Please Enter a Valid Path (Full path of Video Should be Provided).')
+        return
 
-    if not cap.isOpened():                 
-        print("Cannot open camera") 
-        exit()
+    print('Detecting people...')
+    while video.isOpened():
+        #check is True if reading was successful 
+        check, frame =  video.read()
 
-    # ---------------------------------------------------------------------------------
-    # Execution
-    # ---------------------------------------------------------------------------------
-    while True:
-        # Capture frame-by-frame
-        ret, img_RGB = cap.read()
-        # if frame is read correctly ret is True
-        if not ret:
-            print("Can't receive frame (stream end?). Exiting ...")
+        if check:
+            frame = imutils.resize(frame , width=min(800,frame.shape[1]))
+            frame = detect(frame)
+            
+            if writer is not None:
+                writer.write(frame)
+            
+            key = cv2.waitKey(1)
+            if key== ord('q'):
+                break
+        else:
             break
-
-        img_gui = deepcopy(img_RGB)   # working image in RGB
-        img_gray = cv2.cvtColor(img_gui, cv2.COLOR_BGR2GRAY)    #image in GRAY
-        
-        # Detection of faces
-        bboxs = face_cascade.detectMultiScale(img_gray,scaleFactor=1.2, minNeighbors=5,minSize=(20, 20))
-        
-        # Create Detections per haar cascade bbox
-        for bbox in bboxs:
-            x, y, w, h = bbox 
-            cv2.rectangle(img_gui,(x,y),(x+w,y+h),(255,0,0),2)
-
-        # Display the resulting frame
-        cv2.imshow('video', img_gui)
-
-        if cv2.waitKey(1) == ord('q'):
-            break
-    # ---------------------------------------------------------------------------------
-    # Termination
-    # ---------------------------------------------------------------------------------
-    # When everything done, release the capture
-    cap.release()
+    video.release()
     cv2.destroyAllWindows()
 
-#Sees if function was called in the terminal
+def detectByCamera(writer):
+    video = cv2.VideoCapture(0)
+    print('Detecting people...')
+
+    while True:
+        check, frame = video.read()
+
+        frame = detect(frame)
+        if writer is not None:
+            writer.write(frame)
+
+        key = cv2.waitKey(1)
+        if key == ord('q'):
+                break
+
+    video.release()
+    cv2.destroyAllWindows()
+
+def detectByPathImage(path, output_path):
+    image = cv2.imread(path)
+
+    image = imutils.resize(image, width = min(800, image.shape[1])) 
+
+    result_image = detect(image)
+
+    if output_path is not None:
+        cv2.imwrite(output_path, result_image)
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+def ouput_path(args):
+    pass
+
+
+def humanDetector(args):
+    image_path = args["image"]
+    video_path = args['video']
+    if str(args["camera"]) == 'true' : camera = True 
+    else : camera = False
+
+    writer = None
+    if args['output'] is not None and image_path is None:
+        writer = cv2.VideoWriter(args['output'],cv2.VideoWriter_fourcc(*'MJPG'), 10, (600,600))
+
+    if camera:
+        print('[INFO] Opening Web Cam.')
+        detectByCamera(writer)
+    elif video_path is not None:
+        print('[INFO] Opening Video from path.')
+        detectByPathVideo(video_path, writer)
+    elif image_path is not None:
+        print('[INFO] Opening Image from path.')
+        detectByPathImage(image_path, args['output'])
+
+def argsParser():
+    arg_parse = argparse.ArgumentParser()
+    arg_parse.add_argument("-v", "--video", default=None, help="path to Video File ")
+    arg_parse.add_argument("-i", "--image", default=None, help="path to Image File ")
+    arg_parse.add_argument("-c", "--camera", default=False, help="Set true if you want to use the camera.")
+    arg_parse.add_argument("-o", "--output", type=str, help="path to optional output video file")
+    args = vars(arg_parse.parse_args())
+
+    return args
+
 if __name__ == "__main__":
-    main()
+    HOGCV = cv2.HOGDescriptor()
+    HOGCV.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+
+    args = argsParser()
+    humanDetector(args)
