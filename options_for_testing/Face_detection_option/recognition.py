@@ -64,9 +64,9 @@ class Recognition:
         left *= frame_reduction
         font = cv2.FONT_HERSHEY_DUPLEX
         textsize = cv2.getTextSize(name, font, 1.0, 1)
-        mask = original_frame[(bottom - int(textsize[0][1] / 2) + textsize[0][1]) : (bottom + int(textsize[0][1] / 2) + textsize[0][1]),(int((left + right)/2) - int(textsize[0][0] / 2)):(int((left + right)/2) + int(textsize[0][0] / 2))]
-        final_frame[(bottom - int(textsize[0][1] / 2) + textsize[0][1]) : (bottom + int(textsize[0][1] / 2) + textsize[0][1]),(int((left + right)/2) - int(textsize[0][0] / 2)):(int((left + right)/2) + int(textsize[0][0] / 2))] = mask
-        #cv2.imshow('unknown', mask)
+        mask = original_frame[(bottom - int(textsize[0][1] / 2) + textsize[0][1]) : (bottom + int(textsize[0][1] / 2) + textsize[0][1] + 1),(int((left + right)/2) - int(textsize[0][0] / 2)):(int((left + right)/2) + int(textsize[0][0] / 2))]
+        final_frame[(bottom - int(textsize[0][1] / 2) + textsize[0][1]) : (bottom + int(textsize[0][1] / 2) + textsize[0][1] + 1),(int((left + right)/2) - int(textsize[0][0] / 2)):(int((left + right)/2) + int(textsize[0][0] / 2))] = mask
+        #cv2.imshow('Unknown', mask)
 
 
         # cv2.putText(self.frame, name, (int((left + right)/2) - int(textsize[0][0] / 2) , bottom + int(textsize[0][1] / 2) + 4 + textsize[1]), font, 1.0, color, 1)

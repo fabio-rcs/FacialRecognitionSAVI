@@ -2,6 +2,7 @@
 import cv2
 from recognition import Recognition
 import pickle
+import copy
 
 dir_db = './Database/database_group.pickle'
 # Get a reference to webcam #0 (the default one)V
@@ -20,9 +21,11 @@ process_this_frame = True
 cycle_interval =2 
 cycle = 0
 while True:
+    #print('working')
     cycle += 1
     # Grab a single frame of video
     ret, frame = video_capture.read()
+    original_frame = copy.deepcopy(frame)
     recognition = Recognition(frame, known_face_encodings, known_face_names)
     # Only process every other frame of video to save time
 
@@ -31,8 +34,8 @@ while True:
         cycle = 0
         try:
             face_locations, face_names, face_encodings = recognition.process_frame()
-        except ValueError:
-            pass
+        except ValueError as e:
+            print(e)
     # Display the results and get unknown people ids
     count = 0
     unknown_idx = []
@@ -42,16 +45,18 @@ while True:
             unknown_idx.append(count)
         else:
             recognition.draw_rectangles(((top, right, bottom, left), name), (0,255,0))
+            print('draw '+ name)
         count += 1
     
-    print('Identify people')
+    #print('Identify people')
     for i in unknown_idx:
 
        
 
 
     # (top, right, bottom, left), face_encoding in zip(face_locations,face_encodings):
-        recognition.remove_name(frame, recognition.frame, face_locations[i], 'Unknown')
+        recognition.remove_name(original_frame, recognition.frame, face_locations[i], 'Unknown')
+        print('removed ' + str(i))
         # recognition.draw_rectangles((face_locations[i], 'teste'), (255,0,0))
 
     # Display the resulting image
