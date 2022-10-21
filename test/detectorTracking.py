@@ -5,7 +5,7 @@ import cv2
 import imutils
 import time
 import numpy as np
-from functions import Detection, Tracker
+from functions2 import Detection, Tracker
 from detector import Detector
 
 
@@ -25,6 +25,8 @@ def main():
     num_threads = None
         
     cap = cv2.VideoCapture(cap_device)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, cap_width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cap_height) 
    
     detection_counter = 0
     tracker_counter = 0
@@ -34,6 +36,7 @@ def main():
 
     detector = Detector(model_path=model_path, input_shape=input_shape, score_th=score_th,
         nms_th=nms_th,providers=['CPUExecutionProvider'], num_threads=num_threads)
+
 
     # ------------------------------------------
     # Execution
@@ -58,14 +61,16 @@ def main():
         bboxes, scores, class_ids = detector.inference(frame)
         
         elapsed_time = time.time() - start_time
-        frame_gui = draw_debug(frame_gui, elapsed_time, score_th, bboxes,
-                scores, class_ids)
+        #frame_gui = draw_debug(frame_gui, elapsed_time, score_th, bboxes,
+        #        scores, class_ids)
         # ------------------------------------------
         # Create Detections per haar cascade bbox
         # ------------------------------------------
         detections = []
         for bbox in bboxes: 
             x1, y1, x2, y2 = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
+            w = x2 - x1
+            h = y2 - y1
             detection = Detection(x1, y1, x2, y2, image_gray, id=detection_counter, stamp=stamp)
             detection_counter += 1
             detection.draw(frame_gui)

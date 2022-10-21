@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from copy import deepcopy
+from tkinter import W
 from turtle import color
 from imutils.object_detection import non_max_suppression
 import cv2
@@ -13,6 +14,7 @@ class BoundingBox:
     def __init__(self, x1, y1, x2, y2):
         self.x1 = x1
         self.y1 = y1
+        
         self.x2 = x2
         self.y2 = y2
 
@@ -37,7 +39,7 @@ class BoundingBox:
         return A_intr / A_union
 
     def extractSmallImage(self, image_full):
-        return image_full[self.y1:self.y1+self.h, self.x1:self.x1+self.w]
+        return image_full[self.y1:self.y2, self.x1:self.x2]
 
 
 
@@ -65,7 +67,7 @@ class Tracker():
         self.active = True
         self.bboxes = []
         self.detections = []
-        self.tracker = cv2.TrackerMIL.create() 
+        self.tracker = cv2.TrackerMIL_create()
         self.time_since_last_detection = None
 
         self.addDetection(detection, image)
@@ -109,6 +111,28 @@ class Tracker():
 
 
     def addDetection(self, detection, image):
+        
+        print('x1=',detection.x1,' y1=', detection.y1, ' w=',detection.w, ' h=',detection.h)
+        
+        r,c = image.shape
+        print('r=',r,' c=',c)
+        
+        if (detection.x1 + detection.w) > c:
+            detection.w = c - detection.x1 - 5
+            
+        
+        if (detection.y1 + detection.w) > r:
+            detection.h = r - detection.y1 - 5
+            
+        if detection.x1 <= 0:
+            detection.x1 = 1
+        if detection.y2 >= r:
+            detection.y2 = r-1
+        if detection.y1 <= 0:
+            detection.y1 = 1
+
+        print('x2=',detection.x2, ' y2=',detection.y2)
+        print('x1=',detection.x1,' y1=', detection.y1, ' w=',detection.w, ' h=',detection.h)
 
         self.tracker.init(image, (detection.x1, detection.y1, detection.w, detection.h))
 
@@ -121,7 +145,7 @@ class Tracker():
     def track(self, image):
 
         ret, bbox = self.tracker.update(image)
-        x1,y1,w,h = bbox
+        x1,y1,w1,h1 = bbox
 
 #         h,w = self.template.shape
 #         result = cv2.matchTemplate(image, self.template, cv2.TM_CCOEFF_NORMED)
@@ -129,8 +153,9 @@ class Tracker():
 # 
 #         x1 = max_loc[0] 
 #         y1 = max_loc[1] 
-
-        bbox = BoundingBox(x1, y1, w, h)
+        x2 = x1 + w1
+        y2 = y1 + h1
+        bbox = BoundingBox(x1, y1, x2, y2)
         self.bboxes.append(bbox)
 
         # Update template using new bbox coordinates
