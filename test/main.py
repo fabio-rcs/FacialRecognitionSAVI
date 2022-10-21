@@ -21,9 +21,7 @@ def main():
 
     # ###############################################################
     cap = cv2.VideoCapture(cap_device)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, cap_width)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cap_height)
-
+   
     # #############################################################
     detector = Detector(
         model_path=model_path,
@@ -58,7 +56,6 @@ def main():
             break
 
         # #########################################################
-        img_gui = cv2.resize(img_gui, (cap_width, cap_height))
         cv2.imshow('Person Detection Demo', img_gui)
 
     cap.release()

@@ -1,87 +1,58 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+
 import os
 import copy
-
 import cv2
 import numpy as np
-
 
 class Detector(object):
     def __init__(
             self,
-            model_path='model.onnx',
+            model_path,
             input_shape=(192, 192),
             score_th=0.3,
             nms_th=0.5,
             providers=['CUDAExecutionProvider', 'CPUExecutionProvider'],
             num_threads=None,  # Valid only when using Tensorflow-Lite
     ):
-        # 入力サイズ
+        # 
         self.input_shape = input_shape
-
-        # 閾値
         self.score_th = score_th
         self.nms_th = nms_th
 
-        # モデル読み込み
+        #
         self.extension = os.path.splitext(model_path)[1][1:]
-        if self.extension == 'onnx':
-            import onnxruntime
 
-            self.model = onnxruntime.InferenceSession(
-                model_path,
-                providers=providers,
-            )
+        from tflite_runtime.interpreter import Interpreter
+        self.model = Interpreter(
+            model_path=model_path,
+            num_threads=num_threads,
+        )
 
-            self.input_name = self.model.get_inputs()[0].name
-            self.output_name = self.model.get_outputs()[0].name
-        elif self.extension == 'tflite':
-            try:
-                from tflite_runtime.interpreter import Interpreter
-                self.model = Interpreter(
-                    model_path=model_path,
-                    num_threads=num_threads,
-                )
-            except ImportError:
-                import tensorflow as tf
-                self.model = tf.lite.Interpreter(
-                    model_path=model_path,
-                    num_threads=num_threads,
-                )
+        self.model.allocate_tensors()
 
-            self.model.allocate_tensors()
-
-            self.input_name = self.model.get_input_details()[0]['index']
-            self.output_name = self.model.get_output_details()[0]['index']
-        else:
-            raise ValueError("Invalid extension %s." % (model_path))
+        self.input_name = self.model.get_input_details()[0]['index']
+        self.output_name = self.model.get_output_details()[0]['index']
 
     def inference(self, image):
         temp_image = copy.deepcopy(image)
-
-        # 前処理
+        #
         image, ratio = self._preprocess(temp_image, self.input_shape)
 
-        # 推論実施
+        #
         results = None
-        if self.extension == 'onnx':
-            results = self.model.run(
-                None,
-                {self.input_name: image[None, :, :, :]},
-            )[0]
-        elif self.extension == 'tflite':
-            image = image.reshape(
-                -1,
-                3,
-                self.input_shape[0],
-                self.input_shape[1],
-            )
-            self.model.set_tensor(self.input_name, image)
-            self.model.invoke()
-            results = self.model.get_tensor(self.output_name)
 
-        # 後処理
+        image = image.reshape(
+            -1,
+            3,
+            self.input_shape[0],
+            self.input_shape[1],
+        )
+        self.model.set_tensor(self.input_name, image)
+        self.model.invoke()
+        results = self.model.get_tensor(self.output_name)
+
+        #
         bboxes, scores, class_ids = self._postprocess(
             results,
             self.input_shape,
@@ -93,7 +64,7 @@ class Detector(object):
         return bboxes, scores, class_ids
 
     def _preprocess(self, image, input_size):
-        # リサイズ
+        # 
         ratio = min(input_size[0] / image.shape[0],
                     input_size[1] / image.shape[1])
         resized_image = cv2.resize(
@@ -103,7 +74,7 @@ class Detector(object):
         )
         resized_image = resized_image.astype(np.uint8)
 
-        # パディング込み画像作成
+        # 
         padded_image = np.ones(
             (input_size[0], input_size[1], 3),
             dtype=np.uint8,
