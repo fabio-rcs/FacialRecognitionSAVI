@@ -66,11 +66,3 @@ class Recognition:
         textsize = cv2.getTextSize(name, font, 1.0, 1)
         mask = original_frame[(bottom - int(textsize[0][1] / 2) + textsize[0][1]) : (bottom + int(textsize[0][1] / 2) + textsize[0][1] + 1),(int((left + right)/2) - int(textsize[0][0] / 2)):(int((left + right)/2) + int(textsize[0][0] / 2))]
         final_frame[(bottom - int(textsize[0][1] / 2) + textsize[0][1]) : (bottom + int(textsize[0][1] / 2) + textsize[0][1] + 1),(int((left + right)/2) - int(textsize[0][0] / 2)):(int((left + right)/2) + int(textsize[0][0] / 2))] = mask
-        #cv2.imshow('Unknown', mask)
-
-
-        # cv2.putText(self.frame, name, (int((left + right)/2) - int(textsize[0][0] / 2) , bottom + int(textsize[0][1] / 2) + 4 + textsize[1]), font, 1.0, color, 1)
-    # def save_face(self, face_names, face_encodings):
-    #     image_encoded = face_recognition.face_encodings(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))[0]
-    #     return image_encoded
-        

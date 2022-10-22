@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+from ast import While
 import cv2
 from recognition import Recognition
+import face_recognition
 import pickle
 import copy
-import time
 
 dir_db = './Database/database_group.pickle'
 # Get a reference to webcam #0 (the default one)V
@@ -51,40 +52,28 @@ while True:
     cv2.imshow('Video', recognition.frame)
     #print('Identify people')
     for i in unknown_idx:
-
-       
-
-
-    # (top, right, bottom, left), face_encoding in zip(face_locations,face_encodings):
-        recognition.remove_name(original_frame, recognition.frame, face_locations[i], 'Unknown')
-        print('1')
-        # print('removed ' + str(i))
-        recognition.draw_rectangles((face_locations[i], 'Who are you?'), (255,0,0))
-        print('2')
-        time.sleep(0.5)
-        cv2.imshow('Teste', recognition.frame)
-        time.sleep(0.5)
-        
-        print('3')
-        # time.sleep(1)
-        name = input('Who are you?')
-        print('4')
-        recognition.remove_name(original_frame, recognition.frame, face_locations[i], 'Who are you?')
-        print('5')
-        recognition.known_face_encodings.append(face_encodings[i])
-        print('6')
-        recognition.known_face_encodings.append(face_encodings[i])
-        print('7')
-        recognition.known_face_names.append(name)
-        print('8')
-        recognition.remove_name(original_frame, recognition.frame, face_locations[i], name)
-        print('9')
-        recognition.draw_rectangles((face_locations[i], name), (0,0,255))
-        print('10')
-        cv2.imshow('Video', recognition.frame)
-        print('11')
-    # Display the resulting image
-    cv2.imshow('Video', recognition.frame)
+        #Verify if is there any repeated face
+        if True in face_recognition.compare_faces(known_face_encodings, face_encodings[i]):
+            print('erro')
+        else:
+            # (top, right, bottom, left), face_encoding in zip(face_locations,face_encodings):
+            recognition.remove_name(original_frame, recognition.frame, face_locations[i], 'Unknown')
+            print('1')
+            # print('removed ' + str(i))
+            recognition.draw_rectangles((face_locations[i], 'Who are you?'), (255,0,0))
+            # test = threading.Thread(target=test, args=(recognition.frame, 'Video',))
+            # test.start()
+            cv2.imshow('Video', recognition.frame)
+            cv2.waitKey(1)
+            name = input('Who are you?')
+            # while (name in known_face_names):
+            #     print('This name already exists!!')
+            #     name = input('Who are you?')
+            recognition.remove_name(original_frame, recognition.frame, face_locations[i], 'Who are you?')
+            recognition.draw_rectangles((face_locations[i], name), (0,0,255))
+            recognition.known_face_encodings.append(face_encodings[i])
+            recognition.known_face_names.append(name)
+            cv2.imshow('Video', recognition.frame)
 
     # Hit 'q' on the keyboard to quit!
     if cv2.waitKey(1) & 0xFF == ord('q'):
