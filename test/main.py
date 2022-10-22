@@ -33,7 +33,6 @@ def main():
     detector = Detector(model_path=model_path, input_shape=input_shape, score_th=score_th,
         nms_th=nms_th,providers=['CPUExecutionProvider'], num_threads=num_threads)
 
-
     # ------------------------------------------
     # Execution
     # ------------------------------------------
@@ -47,13 +46,13 @@ def main():
             break
 
         image_gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY) # convert video to grayscale
-        frame_gui = deepcopy(frame)
+        image_gui = deepcopy(frame)
         stamp = float(cap.get(cv2.CAP_PROP_POS_MSEC))/1000
         
         # ------------------------------------------
         # Detection of persons 
         # ------------------------------------------
-        bboxes, scores, class_ids = detector.inference(frame)
+        bboxes, _, _ = detector.inference(frame)
         
         # ------------------------------------------
         # Create Detections per haar cascade bbox
@@ -61,11 +60,9 @@ def main():
         detections = []
         for bbox in bboxes: 
             x1, y1, x2, y2 = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
-            w = x2 - x1
-            h = y2 - y1
             detection = Detection(x1, y1, x2, y2, image_gray, id=detection_counter, stamp=stamp)
             detection_counter += 1
-            detection.draw(frame_gui)
+            detection.draw(image_gui)
             detections.append(detection)
 
         # ------------------------------------------
@@ -75,7 +72,6 @@ def main():
             for tracker in trackers: # cycle all trackers
                 tracker_bbox = tracker.detections[-1]
                 iou = detection.computeIOU(tracker_bbox)
-                # print('IOU( T' + str(tracker.id) + ' D' + str(detection.id) + ' ) = ' + str(iou))
                 if iou > iou_threshold: # associate detection with tracker 
                     tracker.addDetection(detection, image_gray)
         
@@ -84,10 +80,8 @@ def main():
         # ------------------------------------------
         for tracker in trackers: # cycle all trackers
             last_detection_id = tracker.detections[-1].id
-            #print(last_detection_id)
             detection_ids = [d.id for d in detections]
             if not last_detection_id in detection_ids:
-                #print('Tracker ' + str(tracker.id) + ' Doing some tracking')
                 tracker.track(image_gray)
         
         # ------------------------------------------
@@ -111,15 +105,16 @@ def main():
 
         # Draw a rectangle around the upper bodies
         for tracker in trackers:
-            tracker.draw(frame_gui)
+            tracker.draw(image_gui)
         
-        cv2.imshow('Video', frame_gui) # Display video
+        cv2.imshow('Video', image_gui) # Display video
         
         # stop script when "q" key is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
         frame_counter += 1
+        
     # Release capture
     cap.release()
     cv2.destroyAllWindows()
