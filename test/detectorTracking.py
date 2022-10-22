@@ -17,7 +17,7 @@ def main():
     cap_device = 0
     cap_width = 640
     cap_height = 360
-
+    
     model_path = 'model/model.tflite'
     input_shape=(192, 192)
     score_th = 0.4
