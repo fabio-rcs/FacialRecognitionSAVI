@@ -1,14 +1,6 @@
 #!/usr/bin/env python3
 
-from copy import deepcopy
-#from tkinter import W
-from turtle import color
-from imutils.object_detection import non_max_suppression
 import cv2
-from matplotlib.transforms import BboxBase
-import numpy as np
-from colorama import Fore, Style, Back
-
 
 class BoundingBox:
     
@@ -43,7 +35,6 @@ class BoundingBox:
         return image_full[self.y1:self.y2, self.x1:self.x2]
 
 
-
 class Detection(BoundingBox):
 
     def __init__(self, x1, y1, x2, y2, image_full, id, stamp):
@@ -55,7 +46,6 @@ class Detection(BoundingBox):
 
     def draw(self, image_gui, color=(255,0,0)):
         cv2.rectangle(image_gui,(self.x1,self.y1),(self.x2, self.y2),color,3)
-        #print('ret Det: ', 'x1=' ,self.x1,' y1=', self.y1 ,' x2=', self.x2, ' y2=',self.y2)
 
         image = cv2.putText(image_gui, 'D' + str(self.id), (self.x1, self.y1-5), cv2.FONT_HERSHEY_SIMPLEX, 
                         1, color, 2, cv2.LINE_AA)
@@ -101,7 +91,6 @@ class Tracker():
 
         # display the detected boxes in the color picture
         cv2.rectangle(frame_gui,(bbox.x1, bbox.y1), (bbox.x2, bbox.y2),color,3)
-        #print('ret Tra: ', 'x1=' ,bbox.x1,' y1=', bbox.y1 ,' x2=', bbox.x2, ' y2=',bbox.y2)
 
         cv2.putText(frame_gui, 'T' + str(self.id), 
                             (bbox.x2-40, bbox.y1-5), cv2.FONT_HERSHEY_SIMPLEX, 
@@ -111,15 +100,9 @@ class Tracker():
                             (bbox.x2-40, bbox.y1-25), cv2.FONT_HERSHEY_SIMPLEX, 
                         1, color, 2, cv2.LINE_AA)
 
-
-    def addDetection(self, detection, image):
-        
-        #print('x1=',detection.x1,' y1=', detection.y1, ' w=',detection.w, ' h=',detection.h)
+    def addDetection(self, detection, image):  
         
         r,c = image.shape
-        #print('x1=',detection.x1,' y1=', detection.y1, ' w=',detection.w, ' h=',detection.h)
-        #print('c=',c,' r=',r)
-        
         if detection.x1 <= 0:
             detection.x1 = 1
         if detection.y2 >= r:
@@ -130,12 +113,6 @@ class Tracker():
             detection.w = c - detection.x1 - 5
         if (detection.y1 + detection.h) >= r:
             detection.h = r - detection.y1 - 5
-            #detection.h =  detection.y2 - detection.y1
-        
-        
-        #print('x2=',detection.x2, ' y2=',detection.y2)
-        #print('x1=',detection.x1,' y1=', detection.y1, ' w=',detection.w, ' h=',detection.h)
-    
 
         self.tracker.init(image, (detection.x1, detection.y1, detection.w, detection.h))
 
@@ -150,12 +127,6 @@ class Tracker():
         ret, bbox = self.tracker.update(image)
         x1,y1,w1,h1 = bbox
 
-#         h,w = self.template.shape
-#         result = cv2.matchTemplate(image, self.template, cv2.TM_CCOEFF_NORMED)
-#         _, max_val, _, max_loc = cv2.minMaxLoc(result)
-# 
-#         x1 = max_loc[0] 
-#         y1 = max_loc[1] 
         x2 = x1 + w1
         y2 = y1 + h1
         bbox = BoundingBox(x1, y1, x2, y2)
