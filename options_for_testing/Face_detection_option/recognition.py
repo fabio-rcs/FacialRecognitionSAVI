@@ -24,33 +24,29 @@ class Recognition:
         for face_encoding in face_encodings:
             # See if the face is a match for the known face(s)
             matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding)
+            # Inicialize name variable
             name = "Unknown"
-
-            # # If a match was found in known_face_encodings, just use the first one.
-            # if True in matches:
-            #     first_match_index = matches.index(True)
-            #     name = known_face_names[first_match_index]
-
-            # Use the known face with the smallest distance to the new face
+            # Get face "Distances"
             face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
+            # Get the minimal distance ID
             best_match_index = np.argmin(face_distances)
+            # Get the best match with minimal distance
             if matches[best_match_index]:
                 name = self.known_face_names[best_match_index]
-
+            # Add name to the list of names in frame
             face_names.append(name)
+        # Return some useful variables
         return face_locations, face_names, face_encodings
 
     def draw_rectangles(self, face_inframe, color):
         (top, right, bottom, left), name = face_inframe
-        # Scale back up face locations since the frame we detected in was scaled to 1/4 size
+        # Scale back up face locations since the frame we detected in was scaled down
         top *= frame_reduction
         right *= frame_reduction
         bottom *= frame_reduction
         left *= frame_reduction
-
         # Draw a box around the face
         cv2.rectangle(self.frame, (left, top), (right, bottom), color, 2)
-
         # Draw the name below the face
         font = cv2.FONT_HERSHEY_DUPLEX
         textsize = cv2.getTextSize(name, font, 1.0, 1)
@@ -58,11 +54,15 @@ class Recognition:
 
     def remove_name(self,original_frame, final_frame, face_location, name):
         (top, right, bottom, left) = face_location
+        # Scale back up face locations since the frame we detected in was scaled down
         top *= frame_reduction
         right *= frame_reduction
         bottom *= frame_reduction
         left *= frame_reduction
         font = cv2.FONT_HERSHEY_DUPLEX
+        # Get name size
         textsize = cv2.getTextSize(name, font, 1.0, 1)
+        # Get a image from inicial frame with the same size and location of the name
         mask = original_frame[(bottom - int(textsize[0][1] / 2) + textsize[0][1]) : (bottom + int(textsize[0][1] / 2) + textsize[0][1] + 1),(int((left + right)/2) - int(textsize[0][0] / 2)):(int((left + right)/2) + int(textsize[0][0] / 2))]
+        # Replace name with the previews image
         final_frame[(bottom - int(textsize[0][1] / 2) + textsize[0][1]) : (bottom + int(textsize[0][1] / 2) + textsize[0][1] + 1),(int((left + right)/2) - int(textsize[0][0] / 2)):(int((left + right)/2) + int(textsize[0][0] / 2))] = mask
