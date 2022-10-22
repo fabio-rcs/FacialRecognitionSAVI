@@ -83,3 +83,7 @@ def draw_debug(image, elapsed_time, score_th, bboxes, scores, class_ids):
 
 if __name__ == '__main__':
     main()
+
+
+# Note:
+# https://github.com/Kazuhito00/Person-Detection-using-RaspberryPi-CPU

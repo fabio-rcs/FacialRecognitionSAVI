@@ -10,7 +10,7 @@ def main():
     # ------------------------------------------
     # Initialization
     # ------------------------------------------
-    haar_upper_body_cascade = cv2.CascadeClassifier("./haarcascade_upperbody.xml")
+    haar_upper_body_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_upperbody.xml')
     cap = cv2.VideoCapture(0)
 
     detection_counter = 0
@@ -105,7 +105,7 @@ def main():
         cv2.imshow('Video', frame_gui) # Display video
         
         # stop script when "q" key is pressed
-        if cv2.waitKey(0) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
         frame_counter += 1
