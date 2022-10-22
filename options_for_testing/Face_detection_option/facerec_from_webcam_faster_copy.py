@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from ast import While
 import cv2
 from recognition import Recognition
 import face_recognition
@@ -23,10 +22,10 @@ process_this_frame = True
 cycle_interval =2 
 cycle = 0
 while True:
-    #print('working')
     cycle += 1
     # Grab a single frame of video
     ret, frame = video_capture.read()
+    # Save the 
     original_frame = copy.deepcopy(frame)
     recognition = Recognition(frame, known_face_encodings, known_face_names)
     # Only process every other frame of video to save time
@@ -54,7 +53,7 @@ while True:
     for i in unknown_idx:
         #Verify if is there any repeated face
         if True in face_recognition.compare_faces(known_face_encodings, face_encodings[i]):
-            print('erro')
+            pass
         else:
             # (top, right, bottom, left), face_encoding in zip(face_locations,face_encodings):
             recognition.remove_name(original_frame, recognition.frame, face_locations[i], 'Unknown')
