@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from distutils.log import error
 import cv2
 class BoundingBox:
     
@@ -107,6 +108,8 @@ class Tracker():
         r,c = image.shape
         if detection.x1 <= 0:
             detection.x1 = 1
+        if detection.x2 >= c:
+            detection.x2 = c-1
         if detection.y2 >= r:
             detection.y2 = r-1
         if detection.y1 <= 0:
@@ -116,13 +119,20 @@ class Tracker():
         if (detection.y1 + detection.h) >= r:
             detection.h = r - detection.y1 - 5
 
-        self.tracker.init(image, (detection.x1, detection.y1, detection.w, detection.h))
+        print (detection.x1)
+        print (detection.x2)
+        print (r)
+        print (c)
+        try:
+            self.tracker.init(image, (detection.x1, detection.y1, detection.w, detection.h))
 
-        self.detections.append(detection)
-        detection.assigned_to_tracker = True
-        self.template = detection.image
-        bbox = BoundingBox(detection.x1, detection.y1, detection.x2, detection.y2)
-        self.bboxes.append(bbox)
+            self.detections.append(detection)
+            detection.assigned_to_tracker = True
+            self.template = detection.image
+            bbox = BoundingBox(detection.x1, detection.y1, detection.x2, detection.y2)
+            self.bboxes.append(bbox)
+        except:
+            pass
 
     def track(self, image):
 
