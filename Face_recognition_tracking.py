@@ -35,8 +35,8 @@ def main():
 
 
     # Load file with lists of names and faces encodings
-    # with open(dir_db, 'rb') as f:
-    #     known_face_names, known_face_encodings = pickle.load(f)
+    with open(dir_db, 'rb') as f:
+        known_face_names, known_face_encodings = pickle.load(f)
 
     # Initialize some variables for face recognition
     face_locations = []

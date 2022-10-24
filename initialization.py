@@ -53,20 +53,21 @@ class Initialization:
 		
 		images_names = os.listdir(dir_images)
 		num_total_img = np.array(images_names).size
+		print(num_total_img)
 
 		# ------------------------------------------
 		# Plot with the people in the database
 		# ------------------------------------------
 
-		id = 0
-		plt.figure("DataBase",figsize=(3, 16))
-		for image in images_names:
-			id += 1
-			img = cv2.imread(str('./Images/'+image))
-			# img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-			plt.subplot(num_total_img,1,id), plt.imshow(img)
-			plt.title(image.rsplit('.',1)[0]), plt.xticks([]), plt.yticks([])
-			plt.subplots_adjust(top=0.95, bottom=0.08, right=0.95, hspace=0.25)
+		# id = 0
+		# plt.figure("DataBase",figsize=(3, 16))
+		# for image in images_names:
+		# 	id += 1
+		# 	img = cv2.imread(str('./Images/'+image))
+		# 	# img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+		# 	plt.subplot(num_total_img,1,id), plt.imshow(img)
+		# 	plt.title(image.rsplit('.',1)[0]), plt.xticks([]), plt.yticks([])
+		# 	plt.subplots_adjust(top=0.95, bottom=0.08, right=0.95, hspace=0.25)
 			
-		plt.show()
+		# plt.show()
 
