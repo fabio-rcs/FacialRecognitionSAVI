@@ -70,11 +70,8 @@ class Initialization:
 				pickle.dump(known_face_names, known_face_encodings)
 		
 
-	def view_database(self):
-		# -----------------------------------------------------------
-		# View database
-		# -----------------------------------------------------------
-
+	def select_diretory(self):
+	
 		if self.DB_Orig:
 			self.dir_image = self.dir_image_backup
 			
@@ -88,6 +85,8 @@ class Initialization:
 					shutil.rmtree(filepath)
 				except OSError:
 					os.remove(filepath)
+
+	def view_database(self,num_atual_img):
 		
 		images_names = os.listdir(self.dir_image)
 		num_total_img = np.array(images_names).size
@@ -95,16 +94,20 @@ class Initialization:
 		# ------------------------------------------
 		# Plot with the people in the database
 		# ------------------------------------------
-		if num_total_img >= 1:
-			id = 0
-			plt.figure("DataBase",figsize=(3, 16))
-			for image in images_names:
-				id += 1
-				img = cv2.imread(self.dir_image + '/' + image)
-				img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-				plt.subplot(num_total_img,1,id), plt.imshow(img)
-				plt.title(image.rsplit('.',1)[0]), plt.xticks([]), plt.yticks([])
-				plt.subplots_adjust(top=0.95, bottom=0.08, right=0.95, hspace=0.25)
+		if num_atual_img != num_total_img or num_atual_img = 0
+			if num_total_img >= 1:
+				id = 0
+				plt.figure("DataBase",figsize=(3, 16))
+				for image in images_names:
+					id += 1
+					img = cv2.imread(self.dir_image + '/' + image)
+					img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+					plt.subplot(num_total_img,1,id), plt.imshow(img)
+					plt.title(image.rsplit('.',1)[0]), plt.xticks([]), plt.yticks([])
+					plt.subplots_adjust(top=0.95, bottom=0.08, right=0.95, hspace=0.25)
 				
-			plt.show()
+				plt.show()
+
+		num_atual_img = num_total_img
+		return num_atual_img
 
