@@ -6,6 +6,7 @@ import pickle
 import copy
 from initialization import Initialization
 
+    
 # -----------------------------------------
 # Parameters
 # -----------------------------------------
@@ -18,21 +19,38 @@ dir_db_backup = './Database/database_backup.pickle'
 dir_image = './Database/images'
 dir_image_backup = './Database/images_backup'
 
+
+# Size of the window
+# cap_width = 1260
+cap_width = 800
+cap_height = 800
+
+
+# Variables for the body detector
+model_path = 'model/model.tflite'
+input_shape=(192, 192)
+score_th = 0.4
+nms_th = 0.5
+num_threads = None
+
+
+
 def main():
     # -----------------------------------------
     # Initialization
     # -----------------------------------------
 
     # Get a reference to webcam #0 (the default one)
-    video_capture = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, cap_width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cap_height) 
 
-    # Start Initialization Class
-    init=Initialization()
-    # Open the app
-    DB_Orig, DB_RealT, DB_Reset = init.app()
-    # Database view
-    init.view_database(dir_image, dir_image_backup)
-
+    # # Start Initialization Class
+    # init=Initialization()
+    # # Open the app
+    # DB_Orig, DB_RealT, DB_Reset = init.app()
+    # # Database view
+    # # init.view_database(dir_image, dir_image_backup)
 
     # Load file with lists of names and faces encodings
     with open(dir_db, 'rb') as f:
@@ -54,7 +72,11 @@ def main():
         cycle += 1
 
         # Grab a single frame of video
-        ret, frame = video_capture.read()
+        ret, frame = cap.read()
+
+        if not ret:
+            print("Can't receive frame. Exiting ...")
+            break
         
         # Save the frame 
         original_frame = copy.deepcopy(frame)
@@ -94,7 +116,7 @@ def main():
     # Finalization
     # -----------------------------------------
 
-    video_capture.release()
+    cap.release()
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":

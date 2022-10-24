@@ -3,6 +3,7 @@ import cv2
 from recognition import Recognition
 import pickle
 import copy
+import threading
 
 # Database directories
     # Binary files
