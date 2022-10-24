@@ -36,6 +36,7 @@ score_th = 0.4
 nms_th = 0.5
 num_threads = None
 
+num_atual_img = 0
 
 def main():
     # -----------------------------------------
@@ -51,11 +52,11 @@ def main():
     init=Initialization(dir_db,dir_db_backup,dir_image,dir_image_backup)
     # # Open the app
     DB_Orig, DB_RealT, DB_Reset = init.app()
-    print(DB_Orig, DB_RealT, DB_Reset)
+    init.select_diretory()
    
     def task():
         # view database
-        init.view_database()
+        init.view_database(num_atual_img)
     
     if __name__ == '__main__':
         # create a process

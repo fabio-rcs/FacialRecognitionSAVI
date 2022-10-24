@@ -94,7 +94,8 @@ class Initialization:
 		# ------------------------------------------
 		# Plot with the people in the database
 		# ------------------------------------------
-		if num_atual_img != num_total_img or num_atual_img = 0
+
+		if num_atual_img != num_total_img or num_atual_img == 0:
 			if num_total_img >= 1:
 				id = 0
 				plt.figure("DataBase",figsize=(3, 16))
