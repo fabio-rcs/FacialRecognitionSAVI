@@ -8,7 +8,7 @@ from detector import Detector
 from functions2 import Detection, Tracker
 from collections import defaultdict
 from multiprocessing import Process
-
+import pyttsx3
     
 # -----------------------------------------
 # Parameters
@@ -79,6 +79,7 @@ def main():
     trackers = []
     iou_threshold = 0.7 # Threshold for the overlap of bboxes
     frame_counter = 0
+    names = [] 
 
     # Definition of body detector
     detector = Detector(model_path=model_path, input_shape=input_shape, score_th=score_th,
@@ -88,6 +89,7 @@ def main():
     points_dict = defaultdict (list) # We use the default model for simplification
     points_list = [] # Point storage list
 
+    engine = pyttsx3.init() # object creation
     # -----------------------------------------
     # Execution
     # -----------------------------------------
@@ -217,8 +219,20 @@ def main():
             if name == 'Unknown':
                 recognition.draw_rectangles(((top, right, bottom, left), name), (0,0,255))
                 unknown_idx.append(count)
+            
             else:
-                recognition.draw_rectangles(((top, right, bottom, left), name), (0,255,0))
+                if name in names:
+                    recognition.draw_rectangles(((top, right, bottom, left), name), (0,255,0))
+                    
+                else:
+                    recognition.draw_rectangles(((top, right, bottom, left), name), (0,255,0))
+                    engine.setProperty('rate', 125)     # setting up new voice rate
+                    engine.setProperty('volume',2.0)    # setting up volume level  between 0 and 1
+                    engine.say("Hello" + name)
+                    names.append(name)
+                    engine.runAndWait()
+                    engine.stop()
+
             count += 1
         cv2.imshow('Video', recognition.frame)
 
