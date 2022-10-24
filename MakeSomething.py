@@ -18,20 +18,15 @@ class Make_Something:
             self.DB_RealT = False
             self.DB_Reset = False
                         
-        elif self.value == 1: 
+        if self.value == 1: 
             self.DB_Orig = False
             self.DB_RealT = True
             self.DB_Reset = False 
         
-        elif self.value == 2:
+        if self.value == 2:
             self.DB_Orig = False
             self.DB_RealT = False
             self.DB_Reset = True
-
-        else:
-            self.DB_Orig = False
-            self.DB_RealT = False
-            self.DB_Reset = False
             
         self.root.destroy()
-        return self.DB_Orig, self.DB_RealT
+        return self.DB_Orig, self.DB_RealT, self.DB_Reset

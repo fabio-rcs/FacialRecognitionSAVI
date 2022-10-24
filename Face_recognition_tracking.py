@@ -2,7 +2,6 @@
 
 import cv2
 from recognition import Recognition
-import pickle
 from copy import deepcopy
 from initialization import Initialization
 from detector import Detector
@@ -38,7 +37,6 @@ nms_th = 0.5
 num_threads = None
 
 
-
 def main():
     # -----------------------------------------
     # Initialization
@@ -50,35 +48,29 @@ def main():
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cap_height) 
 
     # # Start Initialization Class
-    init=Initialization()
+    init=Initialization(dir_db,dir_db_backup,dir_image,dir_image_backup)
     # # Open the app
     DB_Orig, DB_RealT, DB_Reset = init.app()
-    # # Database view
-    # # init.view_database(dir_image, dir_image_backup)
-
-    # a custom function that blocks for a moment
+    print(DB_Orig, DB_RealT, DB_Reset)
+   
     def task():
-        # block for a moment
-        init.view_database(dir_image, dir_image_backup)
+        # view database
+        init.view_database()
     
-    # entry point
     if __name__ == '__main__':
         # create a process
         process = Process(target=task)
         process.start()
 
-    # Load file with lists of names and faces encodings
-    with open(dir_db, 'rb') as f:
-        known_face_names, known_face_encodings = pickle.load(f)
+    known_face_names, known_face_encodings = init.open_database()
 
     # Initialize some variables for face recognition
     face_locations = []
     face_encodings = []
     face_names = []
     process_this_frame = True
-    cycle_interval = 0 
+    cycle_interval = 2 
     cycle = 0
-
 
     # Initialize some variables for body detection
     detection_counter = 0
@@ -111,7 +103,7 @@ def main():
         
         # Save the frame 
         original_frame = deepcopy(frame)
-        recognition = Recognition(frame, known_face_encodings, known_face_names)
+        
         
         image_gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY) # convert video to grayscale
         image_gui = deepcopy(frame) # Copy to work with
@@ -202,15 +194,10 @@ def main():
                         else: # Draws line 
                             cv2.line(image_gui, start_point, end_point, (255,0,255), 2)
         
-        cv2.imshow('Video', image_gui) # Display video
-        
-        # stop script when "q" key is pressed
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
         frame_counter += 1
         
         #FACE RECOGNITION
+        recognition = Recognition(image_gui, known_face_encodings, known_face_names)
         # Only process every other frame of video to save time
         if process_this_frame or cycle>=cycle_interval:
             process_this_frame = False

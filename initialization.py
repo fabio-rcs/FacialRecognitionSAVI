@@ -2,6 +2,8 @@
 
 import cv2
 import os
+import pickle
+import shutil
 import numpy as np     
 import tkinter as tk         
 from matplotlib import pyplot as plt
@@ -9,15 +11,21 @@ from MakeSomething import Make_Something
 
 class Initialization:
 
-	def __init__(self):	
+	def __init__(self,dir_db,dir_db_backup,dir_image,dir_image_backup):	
+		self.dir_db = dir_db
+		self.dir_db_backup = dir_db_backup
+		self.dir_image = dir_image
+		self.dir_image_backup = dir_image_backup
 		self.DB_Orig = False
 		self.DB_RealT = False
 		self.DB_Reset = False
+		
 		
 	def app(self):
 		# -----------------------------------------------------------
 		# Start mode selection, with or without database (app)
 		# -----------------------------------------------------------
+
 		# initialization (app)
 		root = tk.Tk()
 		frm = tk.Frame(root)
@@ -26,7 +34,7 @@ class Initialization:
 		# command function (app)
 		def Value(value):
 			value = value
-			self.DB_Orig,self.DB_RealT = Make_Something(root,value).make_something()
+			self.DB_Orig,self.DB_RealT,self.DB_Reset = Make_Something(root,value).make_something()
 
 		# title (app)
 		tk.Label(frm, text="Inicial setup").grid(column=0, row=0)
@@ -38,38 +46,66 @@ class Initialization:
 		tk.Button(frm, text="Reset database", command = lambda *args: Value(2), activebackground='green').grid(column=0, row=4)
 
 		root.mainloop()
+	
 		return self.DB_Orig, self.DB_RealT, self.DB_Reset
 
-	def view_database(self, dir_image, dir_image_backup):
+
+	def open_database(self):
+		
+		known_face_encodings = []
+		known_face_names = []
+		if self.DB_Orig or self.DB_RealT:
+			with open(self.dir_db_backup, 'rb') as f:
+				known_face_names, known_face_encodings = pickle.load(f)
+		if self.DB_Reset:
+			with open(self.dir_db, 'wb') as f:
+				pickle.dump([],f)
+		
+		return known_face_names, known_face_encodings
+		
+
+	def save_database(self,known_face_names,known_face_encodings):
+		if self.DB_Reset or self.DB_RealT:
+			with open(self.dir_db, 'wb') as f:
+				pickle.dump(known_face_names, known_face_encodings)
+		
+
+	def view_database(self):
 		# -----------------------------------------------------------
 		# View database
 		# -----------------------------------------------------------
 
 		if self.DB_Orig:
-			dir_image = dir_image_backup
+			dir_image = self.dir_image_backup
 			
-		elif self.DB_Orig :
-			dir_image = dir_image
+		elif self.DB_Orig:
+			dir_image = self.dir_image
 		
 		elif self.DB_Reset:
-			dir_image = dir_image
+			#dir_image = dir_image
+			for filename in os.listdir(self.dir_image):
+				filepath = os.path.join(self.dir_image, filename)
+				try:
+					shutil.rmtree(filepath)
+				except OSError:
+					os.remove(filepath)
 		
-		images_names = os.listdir(dir_image)
+		images_names = os.listdir(self.dir_image)
 		num_total_img = np.array(images_names).size
 
 		# ------------------------------------------
 		# Plot with the people in the database
 		# ------------------------------------------
-
-		id = 0
-		plt.figure("DataBase",figsize=(3, 16))
-		for image in images_names:
-			id += 1
-			img = cv2.imread(dir_image + '/' + image)
-			img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-			plt.subplot(num_total_img,1,id), plt.imshow(img)
-			plt.title(image.rsplit('.',1)[0]), plt.xticks([]), plt.yticks([])
-			plt.subplots_adjust(top=0.95, bottom=0.08, right=0.95, hspace=0.25)
-			
-		plt.show()
+		if num_total_img >= 1:
+			id = 0
+			plt.figure("DataBase",figsize=(3, 16))
+			for image in images_names:
+				id += 1
+				img = cv2.imread(self.dir_image + '/' + image)
+				img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+				plt.subplot(num_total_img,1,id), plt.imshow(img)
+				plt.title(image.rsplit('.',1)[0]), plt.xticks([]), plt.yticks([])
+				plt.subplots_adjust(top=0.95, bottom=0.08, right=0.95, hspace=0.25)
+				
+			plt.show()
 
