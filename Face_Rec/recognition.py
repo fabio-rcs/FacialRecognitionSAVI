@@ -66,3 +66,31 @@ class Recognition:
         mask = original_frame[(bottom - int(textsize[0][1] / 2) + textsize[0][1]) : (bottom + int(textsize[0][1] / 2) + textsize[0][1] + 1),(int((left + right)/2) - int(textsize[0][0] / 2)):(int((left + right)/2) + int(textsize[0][0] / 2))]
         # Replace name with the previews image
         final_frame[(bottom - int(textsize[0][1] / 2) + textsize[0][1]) : (bottom + int(textsize[0][1] / 2) + textsize[0][1] + 1),(int((left + right)/2) - int(textsize[0][0] / 2)):(int((left + right)/2) + int(textsize[0][0] / 2))] = mask
+
+    def identify_unknown(self, window_name, original_frame, analyzing_frame,unknown_idx, face_encodings, face_locations):
+        for i in unknown_idx:
+            # Verify if is there any repeated face
+            if True in face_recognition.compare_faces(self.known_face_encodings, face_encodings[i]):
+                pass
+            else:
+                # Switch from unknown to question in the frame
+                self.remove_name(original_frame, analyzing_frame, face_locations[i], 'Unknown')
+                self.draw_rectangles((face_locations[i], 'Who are you?'), (255,0,0))
+
+                # Update image
+                cv2.imshow(window_name, analyzing_frame)
+                cv2.waitKey(1)
+
+                # Get name
+                name = input('Who are you? ')
+
+                # Switch from question to red painted name in the frame
+                self.remove_name(original_frame, analyzing_frame, face_locations[i], 'Who are you?')
+                self.draw_rectangles((face_locations[i], name), (0,0,255))
+
+                # Add info to encodings and names list
+                self.known_face_encodings.append(face_encodings[i])
+                self.known_face_names.append(name)
+                
+                # Update image
+                cv2.imshow(window_name, analyzing_frame)

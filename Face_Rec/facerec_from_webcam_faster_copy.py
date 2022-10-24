@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import cv2
 from recognition import Recognition
-import face_recognition
 import pickle
 import copy
 
@@ -62,33 +61,8 @@ while True:
     cv2.imshow('Video', recognition.frame)
 
     # Identify unknown people
-    for i in unknown_idx:
-        # Verify if is there any repeated face
-        if True in face_recognition.compare_faces(known_face_encodings, face_encodings[i]):
-            pass
-        else:
-            # Switch from unknown to question in the frame
-            recognition.remove_name(original_frame, recognition.frame, face_locations[i], 'Unknown')
-            recognition.draw_rectangles((face_locations[i], 'Who are you?'), (255,0,0))
-
-            # Update image
-            cv2.imshow('Video', recognition.frame)
-            cv2.waitKey(1)
-
-            # Get name
-            name = input('Who are you?')
-
-            # Switch from question to red painted name in the frame
-            recognition.remove_name(original_frame, recognition.frame, face_locations[i], 'Who are you?')
-            recognition.draw_rectangles((face_locations[i], name), (0,0,255))
-
-            # Add info to encodings and names list
-            recognition.known_face_encodings.append(face_encodings[i])
-            recognition.known_face_names.append(name)
-            
-            # Update image
-            cv2.imshow('Video', recognition.frame)
-
+    recognition.identify_unknown('Video',original_frame, recognition.frame, unknown_idx, face_encodings, face_locations)
+    
     # Hit 'q' on the keyboard to quit!
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
