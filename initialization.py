@@ -76,13 +76,12 @@ class Initialization:
 		# -----------------------------------------------------------
 
 		if self.DB_Orig:
-			dir_image = self.dir_image_backup
+			self.dir_image = self.dir_image_backup
 			
 		elif self.DB_Orig:
-			dir_image = self.dir_image
+			self.dir_image = self.dir_image
 		
 		elif self.DB_Reset:
-			#dir_image = dir_image
 			for filename in os.listdir(self.dir_image):
 				filepath = os.path.join(self.dir_image, filename)
 				try:
