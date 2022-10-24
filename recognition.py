@@ -99,5 +99,5 @@ class Recognition:
                 # Save image
                 top, right, bottom, left = face_locations[i]
                 face_image = original_frame[4*top:4*bottom,4*left:4*right]
-                cv2.imwrite(dir_image + '/' + name + '.png', face_image)
+                cv2.imwrite(dir_image + '/' + str(len(self.known_face_names)) + '.png', face_image)
                 

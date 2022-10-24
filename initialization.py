@@ -86,7 +86,7 @@ class Initialization:
 				except OSError:
 					os.remove(filepath)
 
-	def view_database(self,num_atual_img):
+	def view_database(self,num_atual_img, known_names):
 		
 		images_names = os.listdir(self.dir_image)
 		num_total_img = np.array(images_names).size
@@ -104,7 +104,7 @@ class Initialization:
 					img = cv2.imread(self.dir_image + '/' + image)
 					img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 					plt.subplot(num_total_img,1,id), plt.imshow(img)
-					plt.title(image.rsplit('.',1)[0]), plt.xticks([]), plt.yticks([])
+					plt.title(known_names[int(image.rsplit('.',1)[0])]), plt.xticks([]), plt.yticks([])
 					plt.subplots_adjust(top=0.95, bottom=0.08, right=0.95, hspace=0.25)
 				
 				plt.show()

@@ -53,17 +53,15 @@ def main():
     # # Open the app
     DB_Orig, DB_RealT, DB_Reset = init.app()
     init.select_diretory()
-   
+    known_face_names, known_face_encodings = init.open_database()
     def task():
         # view database
-        init.view_database(num_atual_img)
+        init.view_database(num_atual_img, known_face_names)
     
     if __name__ == '__main__':
         # create a process
         process = Process(target=task)
         process.start()
-
-    known_face_names, known_face_encodings = init.open_database()
 
     # Initialize some variables for face recognition
     face_locations = []
