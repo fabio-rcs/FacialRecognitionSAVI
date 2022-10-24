@@ -22,7 +22,6 @@ class Detector(object):
 
         #
         self.extension = os.path.splitext(model_path)[1][1:]
-
         from tflite_runtime.interpreter import Interpreter
         self.model = Interpreter(
             model_path=model_path,
