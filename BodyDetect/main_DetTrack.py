@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
 
-from copy import deepcopy
 import cv2
+from copy import deepcopy
 from functions2 import Detection, Tracker
 from detector import Detector
 from collections import defaultdict
+from initialization import Initialization
+
 
 def main():
+    init=Initialization()
+    # Open the app
+    DB_Orig, DB_RealT, DB_Reset = init.app()
+    # Database view
+    init.view_database()
 
     # ------------------------------------------
     #! Initialization

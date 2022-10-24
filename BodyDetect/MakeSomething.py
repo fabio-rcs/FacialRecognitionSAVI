@@ -6,24 +6,32 @@ class Make_Something:
         
         self.root = root
         self.value = value
-        self.BaseD_OFF = False
-        self.BaseD_ON = False
+        self.DB_Orig = False
+        self.DB_RealT = False
+        self.DB_Reset = False
 
 
     def make_something(self):
         
         if self.value == 0:
-            self.BaseD_ON = True
-            self.BaseD_OFF = False
+            self.DB_Orig = True
+            self.DB_RealT = False
+            self.DB_Reset = False
                         
         elif self.value == 1: 
-            self.BaseD_ON = False
-            self.BaseD_OFF = True 
+            self.DB_Orig = False
+            self.DB_RealT = True
+            self.DB_Reset = False 
+        
+        elif self.value == 2:
+            self.DB_Orig = False
+            self.DB_RealT = False
+            self.DB_Reset = True
 
         else:
-            self.BaseD_ON = False
-            self.BaseD_OFF = False
-        
-        #print('On ' + str(self.BaseD_ON) + ' OFF ' + str(self.BaseD_OFF))
+            self.DB_Orig = False
+            self.DB_RealT = False
+            self.DB_Reset = False
+            
         self.root.destroy()
-        return self.BaseD_ON, self.BaseD_OFF
+        return self.DB_Orig, self.DB_RealT
