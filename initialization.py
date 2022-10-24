@@ -6,7 +6,7 @@ import numpy as np
 import tkinter as tk         
 from matplotlib import pyplot as plt
 from MakeSomething import Make_Something
-
+import shutil
 class Initialization:
 
 	def __init__(self):	
@@ -52,7 +52,13 @@ class Initialization:
 			dir_image = dir_image
 		
 		elif self.DB_Reset:
-			dir_image = dir_image
+			#dir_image = dir_image
+			for filename in os.listdir(dir_image):
+				filepath = os.path.join(dir_image, filename)
+				try:
+					shutil.rmtree(filepath)
+				except OSError:
+					os.remove(filepath)
 		
 		images_names = os.listdir(dir_image)
 		num_total_img = np.array(images_names).size
