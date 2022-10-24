@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import cv2
-
 class BoundingBox:
     
     def __init__(self, x1, y1, x2, y2):
@@ -45,6 +44,7 @@ class Detection(BoundingBox):
         self.assigned_to_tracker = False
 
     def draw(self, image_gui, color=(255,0,0)):
+
         cv2.rectangle(image_gui,(self.x1,self.y1),(self.x2, self.y2),color,3)
 
         image = cv2.putText(image_gui, 'D' + str(self.id), (self.x1, self.y1-5), cv2.FONT_HERSHEY_SIMPLEX, 
@@ -61,6 +61,8 @@ class Tracker():
         self.tracker = cv2.TrackerMIL_create()
         self.time_since_last_detection = None
 
+      
+
         self.addDetection(detection, image)
 
     def getLastDetectionStamp(self):
@@ -74,13 +76,13 @@ class Tracker():
 
     def drawLastDetection(self, image_gui, color=(255,0,255)):
         last_detection = self.detections[-1] # get the last detection
-
+        
         cv2.rectangle(image_gui,(last_detection.x1,last_detection.y1),
                       (last_detection.x2, last_detection.y2),color,3)
-
-        image = cv2.putText(image_gui, 'T' + str(self.id), 
-                            (last_detection.x2-40, last_detection.y1-5), cv2.FONT_HERSHEY_SIMPLEX, 
-                        1, color, 2, cv2.LINE_AA)
+        
+        cv2.putText(image_gui, 'T' + str(self.id), 
+                        (last_detection.x2-40, last_detection.y1-5), cv2.FONT_HERSHEY_SIMPLEX, 
+                    1, color, 2, cv2.LINE_AA)
 
     def draw(self, frame_gui, color=(255,0,255)):
 
@@ -91,7 +93,7 @@ class Tracker():
 
         # display the detected boxes in the color picture
         cv2.rectangle(frame_gui,(bbox.x1, bbox.y1), (bbox.x2, bbox.y2),color,3)
-
+       
         cv2.putText(frame_gui, 'T' + str(self.id), 
                             (bbox.x2-40, bbox.y1-5), cv2.FONT_HERSHEY_SIMPLEX, 
                         1, color, 2, cv2.LINE_AA)
@@ -141,3 +143,15 @@ class Tracker():
             text += str(detection.id) + ', '
 
         return text
+
+    def follow (self):
+            x1 = self.bboxes[-1].x1
+            y1 = self.bboxes[-1].y1
+            h1 = self.bboxes[-1].h
+            w1 = self.bboxes[-1].w
+            x2 = x1 + w1
+            y2 = y1 + h1
+            cx = (x1+x2)/2
+            cy = (y1+y2)/2
+            
+            return int(cx), int(cy)

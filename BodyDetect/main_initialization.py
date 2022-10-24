@@ -2,8 +2,8 @@
 
 import cv2
 import os
-import numpy as np
-import tkinter as tk              
+import numpy as np     
+import tkinter as tk         
 from matplotlib import pyplot as plt
 from MakeSomething import Make_Something
 # -----------------------------------------------------------
