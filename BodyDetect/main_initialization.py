@@ -7,22 +7,25 @@ import tkinter as tk
 from matplotlib import pyplot as plt
 from MakeSomething import Make_Something
 # -----------------------------------------------------------
-# Start mode selection, with or without database
+# Start mode selection, with or without database (app)
 # -----------------------------------------------------------
-
+# initialization (app)
 root = tk.Tk()
 frm = tk.Frame(root)
 frm.grid()
 
+# command function (app)
 def Value(value):
 	global BaseD_ON
 	global BaseD_OFF
 	value = value
 	BaseD_ON,BaseD_OFF = Make_Something(root,value).make_something()
 
+# title (app)
 tk.Label(frm, text="Escolha tipo de inicio").grid(column=0, row=0)
 tk.Label(frm, text="").grid(column=0, row=1)
 
+# Buttons (app)
 tk.Button(frm, text="BaseD ON", command = lambda *args: Value(0), activebackground='green').grid(column=0, row=2)
 tk.Button(frm, text="BaseD OFF", command = lambda *args: Value(1), activebackground='green').grid(column=0, row=3)
 tk.Button(frm, text="Espaço Branco", command = lambda *args: Value(2), activebackground='green').grid(column=0, row=4)
