@@ -8,6 +8,7 @@ from initialization import Initialization
 from detector import Detector
 from functions2 import Detection, Tracker
 from collections import defaultdict
+from multiprocessing import Process
 
     
 # -----------------------------------------
@@ -25,8 +26,8 @@ dir_image_backup = './Database/images_backup'
 
 # Size of the window
 # cap_width = 1260
-cap_width = 800
-cap_height = 800
+cap_width = 700
+cap_height = 700
 
 
 # Variables for the body detector
@@ -49,11 +50,22 @@ def main():
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cap_height) 
 
     # # Start Initialization Class
-    # init=Initialization()
+    init=Initialization()
     # # Open the app
-    # DB_Orig, DB_RealT, DB_Reset = init.app()
+    DB_Orig, DB_RealT, DB_Reset = init.app()
     # # Database view
     # # init.view_database(dir_image, dir_image_backup)
+
+    # a custom function that blocks for a moment
+    def task():
+        # block for a moment
+        init.view_database(dir_image, dir_image_backup)
+    
+    # entry point
+    if __name__ == '__main__':
+        # create a process
+        process = Process(target=task)
+        process.start()
 
     # Load file with lists of names and faces encodings
     with open(dir_db, 'rb') as f:
@@ -64,7 +76,7 @@ def main():
     face_encodings = []
     face_names = []
     process_this_frame = True
-    cycle_interval =2 
+    cycle_interval = 0 
     cycle = 0
 
 

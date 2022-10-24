@@ -45,13 +45,16 @@ class Initialization:
 		# View database
 		# -----------------------------------------------------------
 
-		if self.DB_Orig == True:
-			dir_images = dir_image_backup
+		if self.DB_Orig:
+			dir_image = dir_image_backup
 			
-		else:
-			dir_images = dir_image
+		elif self.DB_Orig :
+			dir_image = dir_image
 		
-		images_names = os.listdir(dir_images)
+		elif self.DB_Reset:
+			dir_image = dir_image
+		
+		images_names = os.listdir(dir_image)
 		num_total_img = np.array(images_names).size
 
 		# ------------------------------------------
@@ -62,7 +65,7 @@ class Initialization:
 		plt.figure("DataBase",figsize=(3, 16))
 		for image in images_names:
 			id += 1
-			img = cv2.imread(dir_images + '/' + image)
+			img = cv2.imread(dir_image + '/' + image)
 			img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 			plt.subplot(num_total_img,1,id), plt.imshow(img)
 			plt.title(image.rsplit('.',1)[0]), plt.xticks([]), plt.yticks([])
