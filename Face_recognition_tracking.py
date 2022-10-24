@@ -223,7 +223,7 @@ def main():
         cv2.imshow('Video', recognition.frame)
 
         # Identify unknown people
-        recognition.identify_unknown('Video',original_frame, recognition.frame, unknown_idx, face_encodings, face_locations)
+        recognition.identify_unknown('Video',original_frame, recognition.frame, unknown_idx, face_encodings, face_locations, dir_image)
         
         # Hit 'q' on the keyboard to quit!
         if cv2.waitKey(1) & 0xFF == ord('q'):

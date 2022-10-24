@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import face_recognition
 import cv2
+from matplotlib import image
 import numpy as np
 
 frame_reduction = 4
@@ -24,7 +25,7 @@ class Recognition:
         for face_encoding in face_encodings:
             # See if the face is a match for the known face(s)
             matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding)
-            # Inicialize name variable
+            # Initialize name variable
             name = "Unknown"
             # Get face "Distances"
             face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
@@ -62,12 +63,12 @@ class Recognition:
         font = cv2.FONT_HERSHEY_DUPLEX
         # Get name size
         textsize = cv2.getTextSize(name, font, 1.0, 1)
-        # Get a image from inicial frame with the same size and location of the name
+        # Get a image from initial frame with the same size and location of the name
         mask = original_frame[(bottom - int(textsize[0][1] / 2) + textsize[0][1]) : (bottom + int(textsize[0][1] / 2) + textsize[0][1] + 1),(int((left + right)/2) - int(textsize[0][0] / 2)):(int((left + right)/2) + int(textsize[0][0] / 2))]
         # Replace name with the previews image
         final_frame[(bottom - int(textsize[0][1] / 2) + textsize[0][1]) : (bottom + int(textsize[0][1] / 2) + textsize[0][1] + 1),(int((left + right)/2) - int(textsize[0][0] / 2)):(int((left + right)/2) + int(textsize[0][0] / 2))] = mask
 
-    def identify_unknown(self, window_name, original_frame, analyzing_frame,unknown_idx, face_encodings, face_locations):
+    def identify_unknown(self, window_name, original_frame, analyzing_frame,unknown_idx, face_encodings, face_locations, dir_image):
         for i in unknown_idx:
             # Verify if is there any repeated face
             if True in face_recognition.compare_faces(self.known_face_encodings, face_encodings[i]):
@@ -94,3 +95,9 @@ class Recognition:
                 
                 # Update image
                 cv2.imshow(window_name, analyzing_frame)
+
+                # Save image
+                top, right, bottom, left = face_locations[i]
+                face_image = original_frame[4*top:4*bottom,4*left:4*right]
+                cv2.imwrite(dir_image + '/' + name + '.png', face_image)
+                
