@@ -245,7 +245,7 @@ def main():
 
         # Identify unknown people
         recognition.identify_unknown('Video',original_frame, recognition.frame, unknown_idx, face_encodings, face_locations, dir_image)
-        
+        init.save_database(recognition.known_face_names, recognition.known_face_encodings)
         # Hit 'q' on the keyboard to quit!
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break

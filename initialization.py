@@ -54,8 +54,11 @@ class Initialization:
 		
 		known_face_encodings = []
 		known_face_names = []
-		if self.DB_Orig or self.DB_RealT:
+		if self.DB_Orig:
 			with open(self.dir_db_backup, 'rb') as f:
+				known_face_names, known_face_encodings = pickle.load(f)
+		if self.DB_RealT:
+			with open(self.dir_db, 'rb') as f:
 				known_face_names, known_face_encodings = pickle.load(f)
 		if self.DB_Reset:
 			with open(self.dir_db, 'wb') as f:
@@ -65,9 +68,10 @@ class Initialization:
 		
 
 	def save_database(self,known_face_names,known_face_encodings):
-		if self.DB_Reset or self.DB_RealT:
-			with open(self.dir_db, 'wb') as f:
-				pickle.dump(known_face_names, known_face_encodings)
+		# if self.DB_Reset or self.DB_RealT:
+		with open(self.dir_db, 'wb') as f:
+			pickle.dump((known_face_names, known_face_encodings),f)
+			print('saved')
 		
 
 	def select_diretory(self):
@@ -83,7 +87,7 @@ class Initialization:
 			for file in files:
 				shutil.copy2(os.path.join(self.dir_image_backup,file), self.dir_image)
 
-		if self.DB_Orig:
+		if self.DB_RealT:
 			self.dir_image = self.dir_image
 		
 		if self.DB_Reset:
