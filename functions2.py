@@ -85,8 +85,8 @@ class Tracker():
                         (last_detection.x2-40, last_detection.y1-5), cv2.FONT_HERSHEY_SIMPLEX, 
                     1, color, 2, cv2.LINE_AA)
 
-    def draw(self, frame_gui, color=(255,0,255)):
-
+    def draw(self, frame_gui, name, color=(255,0,255)):
+        self.name = name
         if not self.active:
             color = (100,100,100)
     
@@ -97,6 +97,10 @@ class Tracker():
        
         cv2.putText(frame_gui, 'T' + str(self.id), 
                             (bbox.x2-40, bbox.y1-5), cv2.FONT_HERSHEY_SIMPLEX, 
+                        1, color, 2, cv2.LINE_AA)
+        
+        cv2.putText(frame_gui, 'Name: ' + str(self.name), 
+                            (bbox.x1, bbox.y1-50), cv2.FONT_HERSHEY_SIMPLEX, 
                         1, color, 2, cv2.LINE_AA)
 
         cv2.putText(frame_gui, str(self.time_since_last_detection) + ' s', 
@@ -119,10 +123,6 @@ class Tracker():
         if (detection.y1 + detection.h) >= r:
             detection.h = r - detection.y1 - 5
 
-        print (detection.x1)
-        print (detection.x2)
-        print (r)
-        print (c)
         try:
             self.tracker.init(image, (detection.x1, detection.y1, detection.w, detection.h))
 

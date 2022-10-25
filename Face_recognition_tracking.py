@@ -5,7 +5,7 @@ from recognition import Recognition
 from copy import deepcopy
 from initialization import Initialization
 from detector import Detector
-from functions2 import Detection, Tracker
+from functions2 import Detection, Tracker, BoundingBox
 from collections import defaultdict
 from multiprocessing import Process
 import pyttsx3
@@ -78,6 +78,7 @@ def main():
     iou_threshold = 0.7 # Threshold for the overlap of bboxes
     frame_counter = 0
     names = [] 
+    tracker_name = None
 
     # Definition of body detector
     detector = Detector(model_path=model_path, input_shape=input_shape, score_th=score_th,
@@ -168,7 +169,7 @@ def main():
 
         # Draw a rectangle around the upper bodies
         for tracker in trackers:
-            tracker.draw(image_gui) # Draws tracker bbox
+            tracker.draw(image_gui,tracker_name) # Draws tracker bbox
             id = tracker.id 
             follow_box = tracker.follow() # Follow up
 
@@ -214,6 +215,14 @@ def main():
         count = 0
         unknown_idx = []
         for (top, right, bottom, left), name in zip(face_locations,face_names):
+            bbox = BoundingBox(left*4,top*4,right*4,bottom*4)
+            for tracker in trackers:
+                tracker_bbox = tracker.bboxes[-1]
+                iou = bbox.computeIOU(tracker_bbox)
+                #print('IOU( T' + str(tracker.id) + ' D' + str(name) + ' ) = ' + str(iou))
+                if iou > iou_threshold: # Associate detection with tracker 
+                    tracker_name = name
+
             if name == 'Unknown':
                 recognition.draw_rectangles(((top, right, bottom, left), name), (0,0,255))
                 unknown_idx.append(count)
