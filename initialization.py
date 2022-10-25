@@ -97,7 +97,13 @@ class Initialization:
 				except OSError:
 					os.remove(filepath)
 
-	def view_database(self,num_atual_img, known_names):
+	def view_database(self):
+		known_names = []
+		try:
+			with open(self.dir_db, 'rb') as f:
+				known_names, _ = pickle.load(f)
+		except:
+			pass
 		
 		images_names = os.listdir(self.dir_image)
 		num_total_img = np.array(images_names).size
@@ -105,21 +111,33 @@ class Initialization:
 		# ------------------------------------------
 		# Plot with the people in the database
 		# ------------------------------------------
+		while num_total_img < 1:
+			images_names = os.listdir(self.dir_image)
+			num_total_img = np.array(images_names).size
 
-		if num_atual_img != num_total_img or num_atual_img == 0:
-			if num_total_img >= 1:
-				id = 0
-				plt.figure("DataBase",figsize=(3, 16))
-				for image in images_names:
-					id += 1
-					img = cv2.imread(self.dir_image + '/' + image)
-					img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-					plt.subplot(num_total_img,1,id), plt.imshow(img)
-					plt.title(known_names[int(image.rsplit('.',1)[0])-1]), plt.xticks([]), plt.yticks([])
-					plt.subplots_adjust(top=0.95, bottom=0.08, right=0.95, hspace=0.25)
-				
-				plt.show()
-
-		num_atual_img = num_total_img
-		return num_atual_img
+		if num_total_img >= 1 and num_total_img == len(known_names):
+			id = 0
+			plt.figure("DataBase",figsize=(3, 16))
+			for image in images_names:
+				id += 1
+				img = cv2.imread(self.dir_image + '/' + image)
+				img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+				plt.subplot(num_total_img,1,id), plt.imshow(img)
+				plt.title(known_names[int(image.rsplit('.',1)[0])-1]), plt.xticks([]), plt.yticks([])
+				plt.subplots_adjust(top=0.95, bottom=0.08, right=0.95, hspace=0.25)
+			plt.show(block=False)
+			known_names_update = known_names
+			try:
+				with open(self.dir_db, 'rb') as f:
+					known_names_update, _ = pickle.load(f)
+			except:
+				pass
+			while (len(known_names_update) != len(known_names)):
+				try:
+					with open(self.dir_db, 'rb') as f:
+						known_names_update, _ = pickle.load(f)
+				except:
+					pass
+			plt.pause(3)
+			plt.close()
 

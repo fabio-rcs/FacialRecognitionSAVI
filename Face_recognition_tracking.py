@@ -55,13 +55,12 @@ def main():
     init.select_diretory()
     known_face_names, known_face_encodings = init.open_database()
     def task():
+        while True:
         # view database
-        init.view_database(num_atual_img, known_face_names)
+            init.view_database()
     
-    if __name__ == '__main__':
-        # create a process
-        process = Process(target=task)
-        process.start()
+    process = Process(target=task)
+    process.start()
 
     # Initialize some variables for face recognition
     face_locations = []
