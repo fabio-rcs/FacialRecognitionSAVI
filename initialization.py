@@ -19,8 +19,7 @@ class Initialization:
 		self.DB_Orig = False
 		self.DB_RealT = False
 		self.DB_Reset = False
-		
-		
+				
 	def app(self):
 		# -----------------------------------------------------------
 		# Start mode selection, with or without database (app)
