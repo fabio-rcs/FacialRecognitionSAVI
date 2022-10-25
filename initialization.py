@@ -73,12 +73,20 @@ class Initialization:
 	def select_diretory(self):
 	
 		if self.DB_Orig:
-			self.dir_image = self.dir_image_backup
-			
-		elif self.DB_Orig:
+			for filename in os.listdir(self.dir_image):
+				filepath = os.path.join(self.dir_image, filename)
+				try:
+					shutil.rmtree(filepath)
+				except OSError:
+					os.remove(filepath)
+			files = os.listdir(self.dir_image_backup)
+			for file in files:
+				shutil.copy2(os.path.join(self.dir_image_backup,file), self.dir_image)
+
+		if self.DB_Orig:
 			self.dir_image = self.dir_image
 		
-		elif self.DB_Reset:
+		if self.DB_Reset:
 			for filename in os.listdir(self.dir_image):
 				filepath = os.path.join(self.dir_image, filename)
 				try:
@@ -104,7 +112,7 @@ class Initialization:
 					img = cv2.imread(self.dir_image + '/' + image)
 					img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 					plt.subplot(num_total_img,1,id), plt.imshow(img)
-					plt.title(known_names[int(image.rsplit('.',1)[0])]), plt.xticks([]), plt.yticks([])
+					plt.title(known_names[int(image.rsplit('.',1)[0])-1]), plt.xticks([]), plt.yticks([])
 					plt.subplots_adjust(top=0.95, bottom=0.08, right=0.95, hspace=0.25)
 				
 				plt.show()
