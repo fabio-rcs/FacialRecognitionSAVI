@@ -71,7 +71,6 @@ class Initialization:
 		# if self.DB_Reset or self.DB_RealT:
 		with open(self.dir_db, 'wb') as f:
 			pickle.dump((known_face_names, known_face_encodings),f)
-			print('saved')
 		
 
 	def select_diretory(self):

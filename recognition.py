@@ -29,11 +29,12 @@ class Recognition:
             name = "Unknown"
             # Get face "Distances"
             face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
-            # Get the minimal distance ID
-            best_match_index = np.argmin(face_distances)
-            # Get the best match with minimal distance
-            if matches[best_match_index]:
-                name = self.known_face_names[best_match_index]
+            # Get the minimal distance ID if any
+            if len(face_distances) > 0:
+                best_match_index = np.argmin(face_distances)
+                # Get the best match with minimal distance
+                if matches[best_match_index]:
+                    name = self.known_face_names[best_match_index]
             # Add name to the list of names in frame
             face_names.append(name)
         # Return some useful variables
