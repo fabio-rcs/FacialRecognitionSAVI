@@ -77,7 +77,7 @@ def main():
     iou_threshold = 0.7 # Threshold for the overlap of bboxes
     frame_counter = 0
     names = [] 
-    tracker_name = None
+    tracker_recognitions = []
 
     # Definition of body detector
     detector = Detector(model_path=model_path, input_shape=input_shape, score_th=score_th,
@@ -168,6 +168,14 @@ def main():
 
         # Draw a rectangle around the upper bodies
         for tracker in trackers:
+            if tracker_recognitions != []:
+                for tracker_recognition in tracker_recognitions:
+                    (id_recognized, temp_tracker_name) = tracker_recognition
+                    if id_recognized == tracker.id:
+                        tracker_name = temp_tracker_name
+            else:
+                tracker_name = None
+                
             tracker.draw(image_gui,tracker_name) # Draws tracker bbox
             id = tracker.id 
             follow_box = tracker.follow() # Follow up
@@ -221,6 +229,9 @@ def main():
                 #print('IOU( T' + str(tracker.id) + ' D' + str(name) + ' ) = ' + str(iou))
                 if iou > iou_threshold: # Associate detection with tracker 
                     tracker_name = name
+                    id_recognized = tracker.id
+                if not (id_recognized, tracker_name) in tracker_recognitions:
+                    tracker_recognitions.append((id_recognized, tracker_name))
 
             if name == 'Unknown':
                 recognition.draw_rectangles(((top, right, bottom, left), name), (0,0,255))
