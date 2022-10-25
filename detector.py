@@ -29,7 +29,6 @@ class Detector(object):
         )
 
         self.model.allocate_tensors()
-
         self.input_name = self.model.get_input_details()[0]['index']
         self.output_name = self.model.get_output_details()[0]['index']
 
